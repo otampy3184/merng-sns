@@ -18,6 +18,11 @@ module.exports = {
     Mutation: {
         async login(_, { username, password}){
             const {errors, valid} = validateLoginInput(username, password);
+            
+            if(!valid){
+                throw new UserInputErrors( 'Errors', {errors});
+            }
+            
             const user = await User.findOne({ username });
 
             if (!user){
