@@ -49,7 +49,7 @@ module.exports = {
              {registerInput : { username, email, password, confirmPassword}
             },  
         ){
-            //Validate user datta
+            //Validate user data
             const 
             //Make sure user doesnt already exist
             const user = await User.findOne({ username });
