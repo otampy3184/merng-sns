@@ -58,12 +58,43 @@ module.exports = {
         //delete post by id
         async deletePost(_, { postId }, context) {
             const user = checkAuth(context)
+            
+            //postを検索
+            try {
+                const post = await Post.findById(postId) 
+                //ユーザー判別
+                if (user.name === post.username) {
+                    await post.delete();
+                    //メッセージのみ返す
+                    return 'Post deleted successfully';
+                } else {
+                    throw new AuthenticationError('Action not allowed');
+                }
+            }catch(err){
+                throw new Error(err)
+            }
         },
 
         //like post by id
         async likePost(_, { postId }, context ) {
             const { username } = checkAuth(context);
-        }
+
+            //Post取得
+            const post = await Post.findById(postId);
+            if (post) {
+                if( post.likes.find((like) => like.username === username )) {
+                    post.likes = post.likes.filter((like) => like.username !== username);
+                } else {
+                    post.likes.push({
+                        username,
+                        createdAt: new Data().toISOString()
+                    });
+                }
+                await post.save();
+                return post;
+
+            } else throw new UserInputError('Post not found')
+        } 
     },
     Subscription: {
         newPost: {
