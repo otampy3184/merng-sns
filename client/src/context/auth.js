@@ -42,4 +42,31 @@ function authReducer(state, action) {
     }
 }
 
+//AuthProvider作成
+function AuthProvider(props) {
+    const [state, disatch] = useReducer(authReducer, initialState);
 
+    //loginの場合はlocalstorage上にjwtTokenをセット
+    function login(userData) {
+        localStorage.setItem('jwtToken', userData.token);
+        dispatchEvent({
+            type: 'LOGIN',
+            payload: userData
+        });
+    }
+
+    //logoutの場合はlocalstrage上のjwttokenを削除
+    function logout(){
+        localStorage.removeItem('jwtToken');
+        dispatch({ type: 'LOGOUT'});
+    }
+
+    return (
+        <AuthContext.Provider
+            value={{ user: state.user, login, logout }}
+            {...props}
+        />
+    );
+}
+
+export { AuthContext, AuthProvider};
